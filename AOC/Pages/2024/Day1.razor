@@ -1,0 +1,34 @@
+@page "/2024/day/1"
+@using aoc.Components.Pages._2024
+
+<PageTitle>Day 1</PageTitle>
+
+<label>
+Puzzle Input: <br/>
+<textarea @bind=_puzzleString rows="10" cols="20" />
+</label>
+
+<br/>
+<button class="btn btn-primary" @onclick="GetTotalDistance">Get Total Distance</button>
+<p role="status">Total Distance: @_totalDistance</p>
+
+<button class="btn btn-primary" @onclick="GetSimilarityScore">Get Similarity Score</button>
+<p role="status">Similariry Score: @_similarityScore</p>
+
+@code{
+    private int _totalDistance = 0;
+    private int _similarityScore = 0;
+    private string _puzzleString = string.Empty;
+
+    private void GetTotalDistance()
+    {
+        var p = new Puzzle1(_puzzleString);
+        _totalDistance = p.GetTotalDistance();
+    }
+
+    private void GetSimilarityScore()
+    {
+        var p = new Puzzle1(_puzzleString);
+        _similarityScore = p.GetSimilarityScore();
+    }
+}
