@@ -1,5 +1,4 @@
 @page "/2024/day/1"
-@using aoc.Components.Pages._2024
 
 <PageTitle>Day 1</PageTitle>
 
@@ -16,19 +15,82 @@ Puzzle Input: <br/>
 <p role="status">Similariry Score: @_similarityScore</p>
 
 @code{
+    private List<int> _leftList = [];
+    private List<int> _rightList = [];
+
     private int _totalDistance = 0;
     private int _similarityScore = 0;
     private string _puzzleString = string.Empty;
 
-    private void GetTotalDistance()
+#region Puzzle
+
+    // Parse the input into the lists
+    private void ParseInput()
     {
-        var p = new Puzzle1(_puzzleString);
-        _totalDistance = p.GetTotalDistance();
+        _leftList = [];
+       _rightList = []; 
+        var lines = _puzzleString.Split(Environment.NewLine);
+        foreach(var line in lines)
+        {
+            // puzzle input from aoc site has multiple whitespaces in between
+            // so split based on whitespace and remove all empty strings
+            var values = line.Split(" ").ToList();
+            values.RemoveAll(s => s == string.Empty);
+
+            _leftList.Add(int.Parse(values[0]));
+            _rightList.Add(int.Parse(values[1]));
+        }
     }
 
-    private void GetSimilarityScore()
+    // Part 1
+    public void GetTotalDistance()
     {
-        var p = new Puzzle1(_puzzleString);
-        _similarityScore = p.GetSimilarityScore();
+        var totalDistance = 0;
+
+        ParseInput();
+        // just sort the number to later substract to get the distance on each node
+        _leftList.Sort();
+        _rightList.Sort();
+
+        var length = _leftList.Count;
+
+        // just making sure that I don't hit index out of bound
+        if(_leftList.Count != _rightList.Count)
+        {
+            throw new InvalidOperationException("Length doesn't match");
+        }
+
+        // lets loop through each node in both list to get the distance
+        // between them and add to get the total distance
+        for(int i = 0; i < length; i++){
+            totalDistance += Math.Abs(_leftList[i] - _rightList[i]);
+        }
+
+        _totalDistance = totalDistance;
     }
+
+    // Part 2
+    public void GetSimilarityScore()
+    {
+        var similarityScore = 0;
+
+        ParseInput();
+        // find the occurence of numbers if the right list
+        var rightListOccurence = _rightList.GroupBy(x=>x)
+            .Select(n => new { Element = n.Key, Count = n.Count()});
+
+        foreach(var leftListItem in _leftList)
+        {
+            var occurence = rightListOccurence
+                .Where(x => x.Element == leftListItem)
+                .Select(x=>x.Count)
+                .FirstOrDefault();
+
+            similarityScore += leftListItem * occurence;
+        }
+
+        _similarityScore = similarityScore;
+    }
+
+#endregion
 }
