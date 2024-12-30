@@ -1,0 +1,64 @@
+@page "/2024/day/2"
+
+<label>
+    Puzzle Input: <br/>
+    <textarea @bind=_puzzleString rows="10" cols="20" />
+</label>
+
+<br/>
+<button class="btn btn-primary" @onclick="GetSafeReports">Get Safe Reports</button>
+<p role="status">Total Distance: @_safeReportCount</p>
+
+@code{
+    private string _puzzleString = string.Empty;
+    private const int LowerBound = 1;
+    private const int UpperBound = 3;
+
+    private int _safeReportCount;
+
+    public void GetSafeReports()
+    {
+        _safeReportCount = 0;
+        try
+        {
+            // parse the input 
+            var reports = _puzzleString.Split(Environment.NewLine);
+            foreach(var report in reports)
+            {
+                var levels = report
+                    .Split( new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToList();
+                _safeReportCount += IsReportSafe(levels) ? 1 : 0;
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+        }
+    }
+
+    private static bool IsReportSafe(List<int> levels)
+    {
+        var reportLevels = levels.Count - 1;
+
+        // find the distance between 2 adjacent levels in the report
+        List<int> distance = [];
+
+        for(var i = 0; i < reportLevels; i++)
+            distance.Add(levels[i] - levels[i+1]);
+
+        // all levels have to be either all increasing or decreasing
+        var isReportSafe = distance.All(x=> x>0) || distance.All(x=> x<0);
+        if(!isReportSafe)
+            return isReportSafe;
+
+        // two adjacent levels must differ by at least 1 
+        // and at most 3
+        isReportSafe = 
+            distance.All(x=> Math.Abs(x) >= LowerBound) && 
+            distance.All(x=> Math.Abs(x) <= UpperBound);
+        return isReportSafe;
+    }
+}
