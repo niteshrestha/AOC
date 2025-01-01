@@ -1,0 +1,83 @@
+@page "/2024/day/3"
+@using System.Text.RegularExpressions;
+
+<p>Day 3 Puzzle</p>
+
+<label>
+    Puzzle Input:
+</label>
+<br/>
+<textarea @bind=_puzzleString rows="10" cols="80" />
+
+<br/>
+
+<lable for="conditionalStatement">Enable Conditional Statement</lable>
+<input id="conditionalStatement" type="checkbox" @bind=isConditionalStatementsEnabled/>
+<br/>
+<button class="btn btn-primary" @onclick="FilterCorruptedMemory">Filter Corrupted Memory</button>
+<p role="status">Output: @_result</p>
+
+
+@code{
+    private static string _puzzleString = string.Empty;
+    private static int _result;
+    private static bool isConditionalStatementsEnabled;
+
+    private static void FilterCorruptedMemory()
+    {
+        try
+        {
+            string puzzleString = _puzzleString;
+            puzzleString = puzzleString.Replace(Environment.NewLine, "");
+
+            int memoryResult = 0;
+            string validMemoryPattern = @"mul\([0-9]+,[0-9]+\)";
+            string multiplierPattern = "[0-9]+";
+
+            // remove everything between don't and do since we don't need to process them 
+            if(isConditionalStatementsEnabled)
+            {
+                puzzleString = ConditionalFilter(puzzleString);
+            }
+            var validMemeroyRegex = new Regex(validMemoryPattern);
+            var validMemoryMatches = validMemeroyRegex.Matches(puzzleString);
+
+            foreach(Match match in validMemoryMatches)
+            {
+                var multiplierRegex = new Regex(multiplierPattern);
+                var numbersMatch = multiplierRegex.Matches(match.Value);
+                if(numbersMatch.Count != 2)
+                    Console.WriteLine("why isn't there 2 numbers to multiply?");
+
+                memoryResult += (int.Parse(numbersMatch[0].Value) * int.Parse(numbersMatch[1].Value));
+            }
+            _result = memoryResult;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+        }
+    }
+
+    // TODO: you can do better
+    private static string ConditionalFilter(string puzzleString)
+    {
+        string conditionalStatementPatter = @"don't";
+        string nonConditionalString = string.Empty;
+        var conditionalSplits = Regex.Split(puzzleString, conditionalStatementPatter);
+        nonConditionalString = conditionalSplits[0];
+
+        foreach(var split in conditionalSplits)
+        {
+            var doIndex = split.IndexOf("do");
+            if(doIndex > 0)
+            {
+                nonConditionalString += split.Remove(0, doIndex);
+            }
+        }
+        Console.WriteLine(nonConditionalString);
+        return nonConditionalString;
+    }
+
+}
