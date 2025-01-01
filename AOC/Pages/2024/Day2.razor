@@ -2,15 +2,21 @@
 
 <label>
     Puzzle Input: <br/>
-    <textarea @bind=_puzzleString rows="10" cols="20" />
 </label>
+<textarea @bind=_puzzleString rows="10" cols="20" />
 
+<br/>
+
+<lable for="problemDapener">Enable Problem Dampener</lable>
+<input id="prpblemDampener" type="checkbox" @bind=isDampenerEnabled/>
 <br/>
 <button class="btn btn-primary" @onclick="GetSafeReports">Get Safe Reports</button>
 <p role="status">Total Distance: @_safeReportCount</p>
 
 @code{
     private string _puzzleString = string.Empty;
+    static bool isDampenerEnabled;
+
     private const int LowerBound = 1;
     private const int UpperBound = 3;
 
@@ -29,7 +35,16 @@
                     .Split( new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(int.Parse)
                     .ToList();
-                _safeReportCount += IsReportSafe(levels) ? 1 : 0;
+
+                var processedLevels = ProcessLevels(levels);
+                var isReportSafe = IsReportSafe(processedLevels);
+
+                if(isDampenerEnabled && !isReportSafe)
+                {
+                    isReportSafe = ProblemDampener(levels, levels.Count);
+                }
+
+                _safeReportCount += isReportSafe ? 1 : 0;
             }
         }
         catch(Exception ex)
@@ -39,7 +54,7 @@
         }
     }
 
-    private static bool IsReportSafe(List<int> levels)
+    private static List<int> ProcessLevels(List<int> levels)
     {
         var reportLevels = levels.Count - 1;
 
@@ -49,16 +64,39 @@
         for(var i = 0; i < reportLevels; i++)
             distance.Add(levels[i] - levels[i+1]);
 
+        return distance;
+    }
+
+    private static bool IsReportSafe(List<int> processedLevels)
+    {
         // all levels have to be either all increasing or decreasing
-        var isReportSafe = distance.All(x=> x>0) || distance.All(x=> x<0);
+        var isReportSafe = processedLevels.All(x=> x > 0) || processedLevels.All(x=> x < 0);
         if(!isReportSafe)
             return isReportSafe;
 
         // two adjacent levels must differ by at least 1 
         // and at most 3
         isReportSafe = 
-            distance.All(x=> Math.Abs(x) >= LowerBound) && 
-            distance.All(x=> Math.Abs(x) <= UpperBound);
+            processedLevels.All(x=> Math.Abs(x) >= LowerBound) && 
+            processedLevels.All(x=> Math.Abs(x) <= UpperBound);
         return isReportSafe;
+    }
+
+    private static bool ProblemDampener(List<int> levels, int length, int index = 0)
+    {
+        if(index == length)
+            return false;
+
+        var partialLevels = levels.ToList();
+        partialLevels.RemoveAt(index);
+
+        var processedLevels = ProcessLevels(partialLevels);
+        var isReportSafe = IsReportSafe(processedLevels);
+        if(isReportSafe)
+        {
+            return isReportSafe;
+        }
+        index++;
+        return ProblemDampener(levels, length, index);
     }
 }
