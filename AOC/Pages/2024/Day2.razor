@@ -1,9 +1,6 @@
 @page "/2024/day/2"
 
-<label>
-    Puzzle Input: <br/>
-</label>
-<textarea @bind=_puzzleString rows="10" cols="20" />
+<Puzzle Year="2024" Day="2" />
 
 <br/>
 
@@ -14,7 +11,6 @@
 <p role="status">Total Distance: @_safeReportCount</p>
 
 @code{
-    private string _puzzleString = string.Empty;
     static bool isDampenerEnabled;
 
     private const int LowerBound = 1;
@@ -28,7 +24,7 @@
         try
         {
             // parse the input 
-            var reports = _puzzleString.Split(Environment.NewLine);
+            var reports = Puzzle._puzzleString.Split(Environment.NewLine);
             foreach(var report in reports)
             {
                 var levels = report

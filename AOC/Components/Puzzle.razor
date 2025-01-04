@@ -1,0 +1,19 @@
+<PageTitle>@Year Day @Day</PageTitle>
+
+<p>@Year Day @Day Puzzle</p>
+
+<label>
+    Puzzle Input:
+</label>
+<br/>
+<textarea @bind=_puzzleString rows="10" cols="80" />
+
+@code
+{
+    [Parameter]
+    public int Year { get; set; } = 0;
+    [Parameter]
+    public int Day { get; set; } = 0;
+
+    public static string _puzzleString = string.Empty;
+}

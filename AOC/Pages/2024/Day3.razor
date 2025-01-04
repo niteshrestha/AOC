@@ -1,14 +1,7 @@
 @page "/2024/day/3"
 @using System.Text.RegularExpressions;
 
-<p>Day 3 Puzzle</p>
-
-<label>
-    Puzzle Input:
-</label>
-<br/>
-<textarea @bind=_puzzleString rows="10" cols="80" />
-
+<Puzzle Day="3" />
 <br/>
 
 <lable for="conditionalStatement">Enable Conditional Statement</lable>
@@ -19,7 +12,6 @@
 
 
 @code{
-    private static string _puzzleString = string.Empty;
     private static int _result;
     private static bool isConditionalStatementsEnabled;
 
@@ -27,7 +19,7 @@
     {
         try
         {
-            string puzzleString = _puzzleString;
+            string puzzleString = Puzzle._puzzleString;
             puzzleString = puzzleString.Replace(Environment.NewLine, "");
 
             int memoryResult = 0;

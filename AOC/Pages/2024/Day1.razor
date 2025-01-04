@@ -1,11 +1,6 @@
 @page "/2024/day/1"
 
-<PageTitle>Day 1</PageTitle>
-
-<label>
-Puzzle Input: <br/>
-<textarea @bind=_puzzleString rows="10" cols="20" />
-</label>
+<Puzzle Year="2024" Day="1" />
 
 <br/>
 <button class="btn btn-primary" @onclick="GetTotalDistance">Get Total Distance</button>
@@ -20,7 +15,6 @@ Puzzle Input: <br/>
 
     private int _totalDistance = 0;
     private int _similarityScore = 0;
-    private string _puzzleString = string.Empty;
 
 #region Puzzle
 
@@ -29,7 +23,7 @@ Puzzle Input: <br/>
     {
         _leftList = [];
        _rightList = []; 
-        var lines = _puzzleString.Split(Environment.NewLine);
+        var lines = Puzzle._puzzleString.Split(Environment.NewLine);
         foreach(var line in lines)
         {
             // puzzle input from aoc site has multiple whitespaces in between
